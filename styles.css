@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rank Up Express Pricing Slider</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .slider-container {
+            width: 80%;
+            margin: 20px 0;
+            position: relative;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            background: #444;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .price-display {
+            font-size: 20px;
+            margin: 10px;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #222;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rank Up Express</h1>
+    <div class="slider-container">
+        <input type="range" id="slider1" class="slider" min="0" max="10000" step="1" value="0">
+        <input type="range" id="slider2" class="slider" min="0" max="10000" step="1" value="10000">
+        <div class="price-display" id="priceDisplay">Price: $151.09 USD</div>
+    </div>
+    <div class="input-container">
+        <input type="number" id="inputStart" min="0" max="10000" value="0">
+        <input type="number" id="inputEnd" min="0" max="10000" value="10000">
+    </div>
+
+    <script>
+        // Pricing tiers with 15% discount
+        const pricingTiers = [
+            { range: [0, 1000], price: 25.39 },
+            { range: [1000, 2000], price: 26.78 },
+            { range: [2000, 3000], price: 28.48 },
+            { range: [3000, 4000], price: 43.78 },
+            { range: [4000, 5000], price: 68.09 },
+            { range: [5000, 6000], price: 77.78 },
+            { range: [6000, 7000], price: 84.91 },
+            { range: [7000, 8000], price: 112.84 },
+            { range: [8000, 9000], price: 141.53 },
+            { range: [9000, 10000], price: 151.09 }
+        ];
+
+        // Update price based on the slider values
+        function updatePrice() {
+            const start = parseInt(document.getElementById('slider1').value);
+            const end = parseInt(document.getElementById('slider2').value);
+
+            if (start > end) return;
+
+            let totalPrice = 0;
+
+            // Calculate the total price based on the ranges
+            for (const tier of pricingTiers) {
+                if (end <= tier.range[0] || start >= tier.range[1]) continue;
+
+                const startRange = Math.max(start, tier.range[0]);
+                const endRange = Math.min(end, tier.range[1]);
+                const rangeLength = endRange - startRange;
+
+                if (rangeLength > 0) {
+                    totalPrice += rangeLength * (tier.price / (tier.range[1] - tier.range[0]));
+                }
+            }
+
+            document.getElementById('priceDisplay').textContent = `Price: $${totalPrice.toFixed(2)} USD`;
+        }
+
+        // Event listeners for slider input
+        document.getElementById('slider1').addEventListener('input', () => {
+            const start = parseInt(document.getElementById('slider1').value);
+            const end = parseInt(document.getElementById('slider2').value);
+            if (start > end) {
+                document.getElementById('slider1').value = end;
+            }
+            document.getElementById('inputStart').value = document.getElementById('slider1').value;
+            updatePrice();
+        });
+
+        document.getElementById('slider2').addEventListener('input', () => {
+            const start = parseInt(document.getElementById('slider1').value);
+            const end = parseInt(document.getElementById('slider2').value);
+            if (start > end) {
+                document.getElementById('slider2').value = start;
+            }
+            document.getElementById('inputEnd').value = document.getElementById('slider2').value;
+            updatePrice();
+        });
+
+        // Event listeners for number input
+        document.getElementById('inputStart').addEventListener('input', () => {
+            const start = parseInt(document.getElementById('inputStart').value);
+            const end = parseInt(document.getElementById('slider2').value);
+            if (start > end) {
+                document.getElementById('inputStart').value = end;
+            }
+            document.getElementById('slider1').value = document.getElementById('inputStart').value;
+            updatePrice();
+        });
+
+        document.getElementById('inputEnd').addEventListener('input', () => {
+            const start = parseInt(document.getElementById('slider1').value);
+            const end = parseInt(document.getElementById('inputEnd').value);
+            if (start > end) {
+                document.getElementById('inputEnd').value = start;
+            }
+            document.getElementById('slider2').value = document.getElementById('inputEnd').value;
+            updatePrice();
+        });
+
+        // Initialize sliders and inputs
+        updatePrice();
+    </script>
+</body>
+</html>
